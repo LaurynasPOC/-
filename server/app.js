@@ -1,27 +1,29 @@
-require("dotenv").config(); // This line should be at the top
-
 const express = require("express");
-const mysql = require("mysql");
+const cors = require("cors");
+const db = require("./database");
+const logger = require("./utils/logger");
+const middleware = require("./utils/middleware");
 
 const app = express();
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-});
-
 db.connect((err) => {
   if (err) {
-    console.log(err);
+    logger.error("Error connecting to database: " + err.message);
+    process.exit(1);
   } else {
-    console.log("Connected successfully");
+    logger.info("Connected to database");
   }
 });
 
+app.use(cors());
+app.use(express.json());
+app.use(middleware.requestLogger);
+
 app.get("/", (req, res) => {
-  res.send("Home page");
+  db.query(`SELECT * FROM users_data`, (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
 });
 
 app.listen(5000, () => {
