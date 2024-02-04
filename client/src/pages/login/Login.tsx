@@ -18,7 +18,7 @@ const LoginFormWrapper = styled(SectionWrapper)`
 const Login = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = (e) => {
+  const handleLogin = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
   };
   return (
