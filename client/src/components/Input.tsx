@@ -30,6 +30,7 @@ const Input: React.FC<InputProps> = ({
       pattern={pattern}
       onChange={onChange}
       required={required}
+      placeholder=" "
       {...rest}
     />
     <label htmlFor={label?.replace(" ", "").toLowerCase()}>{label}</label>
@@ -74,6 +75,7 @@ const StyledInput = styled.div<StyleProps>`
       outline: none;
     }
   }
+  input:not(:placeholder-shown) + label,
   input:focus + label {
     color: var(--grey);
     transform: translateY(-10px) translateX(10px);

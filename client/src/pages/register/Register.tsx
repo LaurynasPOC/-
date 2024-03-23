@@ -4,18 +4,6 @@ import Input from "../../components/Input";
 import Button from "../../components/Buttons";
 import { SectionWrapper, Container } from "../../components/wrappers";
 
-const RegisterFormWrapper = styled(SectionWrapper)`
-  padding: 20px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  h4 {
-    color: var(--primary);
-    margin-bottom: 20px;
-  }
-`;
-
 interface FormData {
   username: string;
   email: string;
@@ -122,3 +110,15 @@ const Register: React.FC = () => {
   );
 };
 export default Register;
+
+const RegisterFormWrapper = styled(SectionWrapper)`
+  padding: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  h4 {
+    color: var(--primary);
+    margin-bottom: 20px;
+  }
+`;
