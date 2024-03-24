@@ -5,20 +5,8 @@ interface Credentials {
   password: string;
 }
 
-interface User {
-  username: string;
-  email: string;
-  password: string;
-  password2: string;
-}
-
 interface LoginResponse {
   token: string;
-}
-
-interface RegisterResponse {
-  id: string;
-  username: string;
 }
 
 const login = async (credentials: Credentials): Promise<LoginResponse> => {
@@ -26,9 +14,4 @@ const login = async (credentials: Credentials): Promise<LoginResponse> => {
   return response.data;
 };
 
-const register = async (newUser: User): Promise<RegisterResponse> => {
-  const response = await axios.post<RegisterResponse>("/api/register", newUser);
-  return response.data;
-};
-
-export default { login, register };
+export default login;

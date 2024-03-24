@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
 import { SectionWrapper, Container } from "../../components/wrappers";
+import register from "../../services/register";
 
 interface FormData {
   username: string;
@@ -62,10 +63,16 @@ const Register: React.FC = () => {
     setErrors(newErrors);
     return formIsValid;
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form data:", formData);
+      const result = await register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        password2: formData.repeatPassword,
+      });
+      console.log(result);
     }
   };
   return (
