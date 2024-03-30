@@ -8,7 +8,7 @@ interface InputProps {
   type: "email" | "text" | "password" | "number";
   pattern?: string;
   required?: boolean;
-  errorMessage?: string;
+  errormessage?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -18,10 +18,9 @@ const Input: React.FC<InputProps> = ({
   pattern,
   type,
   required,
-  errorMessage,
-  ...rest
+  errormessage,
 }) => (
-  <StyledInput errorMessage={errorMessage} {...rest}>
+  <StyledInput errormessage={errormessage}>
     <input
       id={label?.replace(" ", "").toLowerCase()}
       name={label}
@@ -31,17 +30,16 @@ const Input: React.FC<InputProps> = ({
       onChange={onChange}
       required={required}
       placeholder=" "
-      {...rest}
     />
     <label htmlFor={label?.replace(" ", "").toLowerCase()}>{label}</label>
-    {errorMessage && <p>{errorMessage}</p>}
+    {errormessage && <p>{errormessage}</p>}
   </StyledInput>
 );
 
 export default Input;
 
 interface StyleProps {
-  errorMessage?: string;
+  errormessage?: string;
 }
 
 const StyledInput = styled.div<StyleProps>`
@@ -63,8 +61,8 @@ const StyledInput = styled.div<StyleProps>`
     padding: 15px;
     background: var(--white);
     color: var(--black);
-    border: ${({ errorMessage }) =>
-      errorMessage ? "1px solid var(--error)" : "1px solid var(--primary)"};
+    border: ${({ errormessage }) =>
+      errormessage ? "1px solid var(--error)" : "1px solid var(--primary)"};
     border-radius: 4px;
     width: 100%;
     font-size: 16px;
@@ -78,7 +76,7 @@ const StyledInput = styled.div<StyleProps>`
   input:not(:placeholder-shown) + label,
   input:focus + label {
     color: var(--grey);
-    transform: translateY(-10px) translateX(10px);
+    transform: translateY(-8px) translateX(10px);
     font-size: 12px;
     background: var(--white);
     padding: 2px;

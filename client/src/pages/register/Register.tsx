@@ -66,13 +66,25 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      const result = await register({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        password2: formData.repeatPassword,
-      });
-      console.log(result);
+      try {
+        const result = await register({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          password2: formData.repeatPassword,
+        });
+        console.log(result);
+        if (result) {
+          setFormData({
+            username: "",
+            email: "",
+            password: "",
+            repeatPassword: "",
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
   return (
@@ -85,28 +97,28 @@ const Register: React.FC = () => {
             onChange={handleInputChange("username")}
             type="text"
             label="Vartotojo vardas"
-            errorMessage={errors.username}
+            errormessage={errors.username}
           />
           <Input
             value={formData.email}
             onChange={handleInputChange("email")}
             type="email"
             label="El. paštas"
-            errorMessage={errors.email}
+            errormessage={errors.email}
           />
           <Input
             value={formData.password}
             onChange={handleInputChange("password")}
             label="Slaptažodis"
             type="password"
-            errorMessage={errors.password}
+            errormessage={errors.password}
           />
           <Input
             value={formData.repeatPassword}
             onChange={handleInputChange("repeatPassword")}
             label="Pakartokite slaptažodį"
             type="password"
-            errorMessage={errors.repeatPassword}
+            errormessage={errors.repeatPassword}
           />
           <Button variant="primary" type="submit">
             Registruotis

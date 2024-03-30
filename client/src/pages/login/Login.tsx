@@ -62,14 +62,14 @@ const Login = () => {
             onChange={handleEmailChange}
             type="text"
             label="El. paštas"
-            errorMessage={errors.email}
+            errormessage={errors.email}
           />
           <Input
             value={password}
             onChange={handlePasswordChange}
             label="Slaptažodis"
             type="password"
-            errorMessage={errors.password}
+            errormessage={errors.password}
           />
           <Button variant="primary" type="submit">
             Prisijungti

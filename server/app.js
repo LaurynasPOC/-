@@ -6,6 +6,7 @@ const middleware = require("./utils/middleware");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const app = express();
+const registerRouter = require("./controllers/register");
 
 db.connect((err) => {
   if (err) {
@@ -20,16 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-app.post("/api/register", async (req, res) => {
-  const { username, email, password, password2 } = req.body;
-  try {
-    await createUser(username, email, password, password2);
-    res.status(201).send("User created");
-  } catch (error) {
-    logger.error("Error creating user: " + error.message);
-    res.status(500).send("Error creating user");
-  }
-});
+app.use("/api/register", registerRouter);
 
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
