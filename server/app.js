@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { db, createUser, findUserByEmail } = require("./database");
+const { db, findUserByEmail } = require("./database");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const bcrypt = require("bcrypt");
@@ -49,6 +49,8 @@ app.get("/", (req, res) => {
     res.send(results);
   });
 });
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 app.listen(5000, () => {
   console.log("Express server listening on port 5000");

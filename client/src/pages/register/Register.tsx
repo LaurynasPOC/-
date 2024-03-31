@@ -1,9 +1,18 @@
-import { useState } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
+import Notification from "../../components/Notification";
 import { SectionWrapper, Container } from "../../components/wrappers";
-import register from "../../services/register";
+import {
+  setField,
+  setErrors,
+  resetForm,
+  selectFormData,
+  selectFormErrors,
+} from "../../state/slices/registerSlice";
+import registerService from "../../services/register";
 
 interface FormData {
   username: string;
@@ -12,36 +21,29 @@ interface FormData {
   repeatPassword: string;
 }
 
-interface FormErrors {
-  username?: string;
-  email?: string;
-  password?: string;
-  repeatPassword?: string;
-}
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    username: "",
-    email: "",
-    password: "",
-    repeatPassword: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const dispatch = useDispatch();
+  const formData = useSelector(selectFormData);
+  const errors = useSelector(selectFormErrors);
 
   const handleInputChange =
     (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData({ ...formData, [field]: e.target.value });
-
-      setErrors({ ...errors, [field]: "" });
+      dispatch(setField({ field, value: e.target.value }));
     };
+
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    let formIsValid: boolean = true;
+    const newErrors: Record<keyof FormData, string | undefined> = {
+      username: "",
+      email: "",
+      password: "",
+      repeatPassword: "",
+    };
+    let formIsValid = true;
 
     if (!formData.username) {
       newErrors.username = "Vartotojo vardas yra privalomas.";
       formIsValid = false;
     }
-
     if (!formData.email) {
       newErrors.email = "El. pašto adresas yra privalomas.";
       formIsValid = false;
@@ -49,46 +51,40 @@ const Register: React.FC = () => {
       newErrors.email = "Neteisingas el. pašto formatas.";
       formIsValid = false;
     }
-
     if (!formData.password) {
       newErrors.password = "Slaptažodis yra privalomas.";
       formIsValid = false;
     }
-
     if (formData.password !== formData.repeatPassword) {
       newErrors.repeatPassword = "Slaptažodžiai nesutampa.";
       formIsValid = false;
     }
 
-    setErrors(newErrors);
+    dispatch(setErrors(newErrors));
     return formIsValid;
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const result = await register({
+        const result = await registerService({
           username: formData.username,
           email: formData.email,
           password: formData.password,
           password2: formData.repeatPassword,
         });
         console.log(result);
-        if (result) {
-          setFormData({
-            username: "",
-            email: "",
-            password: "",
-            repeatPassword: "",
-          });
-        }
+        dispatch(resetForm());
       } catch (err) {
         console.error(err);
       }
     }
   };
+
   return (
     <SectionWrapper>
+      <Notification type="success" />
       <Container>
         <RegisterFormWrapper as="form" onSubmit={handleSubmit}>
           <h4>Registracijos duomenys</h4>
@@ -128,6 +124,7 @@ const Register: React.FC = () => {
     </SectionWrapper>
   );
 };
+
 export default Register;
 
 const RegisterFormWrapper = styled(SectionWrapper)`

@@ -1,6 +1,6 @@
 const registerRouter = require("express").Router();
 const { createUser } = require("../database");
-
+const logger = require("../utils/logger");
 registerRouter.post("/", async (req, res) => {
   const { username, email, password, password2 } = req.body;
   try {
