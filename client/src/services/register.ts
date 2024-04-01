@@ -14,31 +14,19 @@ interface RegisterResponse {
   username: string;
 }
 
-interface ErrorResponse {
-  message: string;
-}
-
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
 const register = async (newUser: User): Promise<RegisterResponse> => {
-  try {
-    const response = await api.post<RegisterResponse>("/api/register", newUser);
-    return response.data;
-  } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>;
-    if (axiosError && axiosError.response) {
-      console.error("Register API error:", axiosError.response.data.message);
-      throw new Error(
-        axiosError.response.data.message || "Error during registration"
-      );
-    } else {
-      console.error("Unknown error:", axiosError);
-      throw new Error("Unknown error occurred during registration");
-    }
-  }
+  return api
+    .post<RegisterResponse>("/api/register", newUser)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      console.log(error);
+      throw error;
+    });
 };
 
 export default register;

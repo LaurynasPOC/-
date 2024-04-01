@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import registerReducer from "./slices/registerSlice";
-import notificationSlice from "./slices/notificationSlice";
+import alertSlice from "./slices/alertSlice";
 
 export const store = configureStore({
   reducer: {
     register: registerReducer,
-    notifications: notificationSlice,
+    alert: alertSlice,
   },
 });
 

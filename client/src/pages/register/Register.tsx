@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
-import Notification from "../../components/Notification";
+import { addAlert, removeAlert } from "../../state/slices/alertSlice";
 import { SectionWrapper, Container } from "../../components/wrappers";
 import {
   setField,
@@ -13,6 +13,7 @@ import {
   selectFormErrors,
 } from "../../state/slices/registerSlice";
 import registerService from "../../services/register";
+import { AxiosError } from "axios";
 
 interface FormData {
   username: string;
@@ -74,17 +75,62 @@ const Register: React.FC = () => {
           password: formData.password,
           password2: formData.repeatPassword,
         });
-        console.log(result);
-        dispatch(resetForm());
-      } catch (err) {
-        console.error(err);
+        if (result) {
+          const notificationId = new Date().getTime().toString();
+          dispatch(resetForm());
+          dispatch(
+            addAlert(notificationId, "success", "Registracija sėkminga!")
+          );
+          setTimeout(() => {
+            dispatch(removeAlert({ id: notificationId }));
+          }, 5000);
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response) {
+          console.error("Error data:", axiosError.response.data);
+          console.error("Status code:", axiosError.response.status);
+          if (axiosError.response.status === 409) {
+            const notificationId = new Date().getTime().toString();
+            dispatch(
+              addAlert(
+                notificationId,
+                "error",
+                "El. paštas jau yra registruotas"
+              )
+            );
+            setTimeout(() => {
+              dispatch(removeAlert({ id: notificationId }));
+            }, 5000);
+          } else {
+            const notificationId = new Date().getTime().toString();
+            dispatch(
+              addAlert(notificationId, "error", "An unexpected error occurred")
+            );
+            setTimeout(() => {
+              dispatch(removeAlert({ id: notificationId }));
+            }, 5000);
+          }
+        } else {
+          console.error("An error occurred:", axiosError.message);
+          const notificationId = new Date().getTime().toString();
+          dispatch(
+            addAlert(
+              notificationId,
+              "error",
+              "Network error or no response from server"
+            )
+          );
+          setTimeout(() => {
+            dispatch(removeAlert({ id: notificationId }));
+          }, 5000);
+        }
       }
     }
   };
 
   return (
     <SectionWrapper>
-      <Notification type="success" />
       <Container>
         <RegisterFormWrapper as="form" onSubmit={handleSubmit}>
           <h4>Registracijos duomenys</h4>
