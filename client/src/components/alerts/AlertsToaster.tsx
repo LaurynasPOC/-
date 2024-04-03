@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectNotificationMessages } from "../../state/slices/alertSlice";
 
-interface AlertMessage {
+export interface AlertMessage {
   id: string;
   message: string;
   type: "info" | "success" | "warning" | "error";

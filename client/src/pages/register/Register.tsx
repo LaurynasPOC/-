@@ -1,10 +1,9 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import { RegisterFormWrapper } from "./styled";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
-import { addAlert, removeAlert } from "../../state/slices/alertSlice";
-import { SectionWrapper, Container } from "../../components/wrappers";
+import { useAlert } from "../../components/hooks/useAlert";
 import {
   setField,
   setErrors,
@@ -13,17 +12,12 @@ import {
   selectFormErrors,
 } from "../../state/slices/registerSlice";
 import registerService from "../../services/register";
+import { FormData } from "../../state/slices/registerSlice";
 import { AxiosError } from "axios";
-
-interface FormData {
-  username: string;
-  email: string;
-  password: string;
-  repeatPassword: string;
-}
 
 const Register: React.FC = () => {
   const dispatch = useDispatch();
+  const alert = useAlert();
   const formData = useSelector(selectFormData);
   const errors = useSelector(selectFormErrors);
 
@@ -76,14 +70,8 @@ const Register: React.FC = () => {
           password2: formData.repeatPassword,
         });
         if (result) {
-          const notificationId = new Date().getTime().toString();
           dispatch(resetForm());
-          dispatch(
-            addAlert(notificationId, "success", "Registracija sėkminga!")
-          );
-          setTimeout(() => {
-            dispatch(removeAlert({ id: notificationId }));
-          }, 5000);
+          alert("success", "Registracija sėkminga!");
         }
       } catch (error) {
         const axiosError = error as AxiosError;
@@ -91,96 +79,51 @@ const Register: React.FC = () => {
           console.error("Error data:", axiosError.response.data);
           console.error("Status code:", axiosError.response.status);
           if (axiosError.response.status === 409) {
-            const notificationId = new Date().getTime().toString();
-            dispatch(
-              addAlert(
-                notificationId,
-                "error",
-                "El. paštas jau yra registruotas"
-              )
-            );
-            setTimeout(() => {
-              dispatch(removeAlert({ id: notificationId }));
-            }, 5000);
+            alert("error", "El. paštas jau yra registruotas");
           } else {
-            const notificationId = new Date().getTime().toString();
-            dispatch(
-              addAlert(notificationId, "error", "An unexpected error occurred")
-            );
-            setTimeout(() => {
-              dispatch(removeAlert({ id: notificationId }));
-            }, 5000);
+            alert("error", "An unexpected error occurred");
           }
-        } else {
-          console.error("An error occurred:", axiosError.message);
-          const notificationId = new Date().getTime().toString();
-          dispatch(
-            addAlert(
-              notificationId,
-              "error",
-              "Network error or no response from server"
-            )
-          );
-          setTimeout(() => {
-            dispatch(removeAlert({ id: notificationId }));
-          }, 5000);
         }
       }
     }
   };
 
   return (
-    <SectionWrapper>
-      <Container>
-        <RegisterFormWrapper as="form" onSubmit={handleSubmit}>
-          <h4>Registracijos duomenys</h4>
-          <Input
-            value={formData.username}
-            onChange={handleInputChange("username")}
-            type="text"
-            label="Vartotojo vardas"
-            errormessage={errors.username}
-          />
-          <Input
-            value={formData.email}
-            onChange={handleInputChange("email")}
-            type="email"
-            label="El. paštas"
-            errormessage={errors.email}
-          />
-          <Input
-            value={formData.password}
-            onChange={handleInputChange("password")}
-            label="Slaptažodis"
-            type="password"
-            errormessage={errors.password}
-          />
-          <Input
-            value={formData.repeatPassword}
-            onChange={handleInputChange("repeatPassword")}
-            label="Pakartokite slaptažodį"
-            type="password"
-            errormessage={errors.repeatPassword}
-          />
-          <Button variant="primary" type="submit">
-            Registruotis
-          </Button>
-        </RegisterFormWrapper>
-      </Container>
-    </SectionWrapper>
+    <RegisterFormWrapper as="form" onSubmit={handleSubmit}>
+      <h4>Registracijos duomenys</h4>
+      <Input
+        value={formData.username}
+        onChange={handleInputChange("username")}
+        type="text"
+        label="Vartotojo vardas"
+        errormessage={errors.username}
+      />
+      <Input
+        value={formData.email}
+        onChange={handleInputChange("email")}
+        type="email"
+        label="El. paštas"
+        errormessage={errors.email}
+      />
+      <Input
+        value={formData.password}
+        onChange={handleInputChange("password")}
+        label="Slaptažodis"
+        type="password"
+        errormessage={errors.password}
+      />
+      <Input
+        value={formData.repeatPassword}
+        onChange={handleInputChange("repeatPassword")}
+        label="Pakartokite slaptažodį"
+        type="password"
+        errormessage={errors.repeatPassword}
+      />
+      <Button variant="primary" type="submit">
+        Registruotis
+      </Button>
+    </RegisterFormWrapper>
   );
 };
 
 export default Register;
-
-const RegisterFormWrapper = styled(SectionWrapper)`
-  padding: 20px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  h4 {
-    color: var(--primary);
-    margin-bottom: 20px;
-  }
-`;

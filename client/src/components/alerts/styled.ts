@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-interface Props {
+export interface AlertProps {
   type: "info" | "success" | "warning" | "error";
 }
 
@@ -13,7 +13,7 @@ export const AlertsContainerStyles = styled.div`
   gap: 15px;
 `;
 
-export const AlertStyles = styled.div<Props>`
+export const AlertStyles = styled.div<AlertProps>`
   position: relative;
   width: fit-content;
   padding: 10px;
@@ -47,7 +47,7 @@ export const AlertStyles = styled.div<Props>`
   }
 `;
 
-const getColorForType = (type?: Props["type"]) => {
+const getColorForType = (type: AlertProps["type"]) => {
   switch (type) {
     case "success":
       return "var(--success)";
