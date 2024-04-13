@@ -3,6 +3,9 @@ import styled from "styled-components";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
 import { SectionWrapper, Container } from "../../components/wrappers";
+import loginService from "../../services/login";
+import { useAlert } from "../../components/hooks/useAlert";
+import { AxiosError } from "axios";
 
 interface FormErrors {
   email?: string;
@@ -13,7 +16,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
-
+  const alert = useAlert();
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setErrors({ ...errors, email: "" });
@@ -45,11 +48,32 @@ const Login = () => {
     return formIsValid;
   };
 
-  const handleLogin = (e: { preventDefault: () => void }) => {
+  const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     console.log(validateForm());
     if (validateForm()) {
-      console.log("Form data:");
+      try {
+        const result = await loginService({ email, password });
+        console.log(result);
+        if (result) {
+          setEmail("");
+          setPassword("");
+          alert("success", "Prisijungimas sekmingas!");
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response) {
+          console.error("Error data:", axiosError.response.data);
+          console.error("Status code:", axiosError.response.status);
+          if (axiosError.response.status === 401) {
+            alert("error", "Blogi prisijungimo duomenys");
+          } else if (axiosError.response.status === 400) {
+            alert("error", "Toks vartotojas nera registruotas");
+          } else {
+            alert("error", "Klaida jungiantis prasome bandyti veliau");
+          }
+        }
+      }
     }
   };
   return (
