@@ -1,12 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const { db, findUserByEmail } = require("./database");
+const { db } = require("./database");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const app = express();
 const registerRouter = require("./controllers/register");
+const loginRouter = require("./controllers/login");
 
 db.connect((err) => {
   if (err) {
@@ -23,25 +22,7 @@ app.use(middleware.requestLogger);
 
 app.use("/api/register", registerRouter);
 
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-  findUserByEmail(email, async (err, user) => {
-    if (err) {
-      return res.status(500).send("Server error");
-    }
-    if (!user) {
-      return res.status(400).send("User not found");
-    }
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).send("Password incorrect");
-    }
-    const token = jwt.sign({ userId: user.id }, "yourSecretKey", {
-      expiresIn: "1h",
-    });
-    res.status(200).json({ token });
-  });
-});
+app.use("/api/login", loginRouter);
 
 app.get("/", (req, res) => {
   db.query(`SELECT * FROM users_data`, (err, results) => {
