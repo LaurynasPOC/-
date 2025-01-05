@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-app.use("/api/register", registerRouter);
+// app.use("/api/register", registerRouter);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
 app.get("/", (req, res) => {

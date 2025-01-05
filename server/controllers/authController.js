@@ -2,9 +2,11 @@ const {
   findUserByEmail,
   validatePassword,
   generateToken,
+  createUser,
 } = require("../services/authService");
 const logger = require("../utils/logger");
 
+// Login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -13,18 +15,14 @@ const loginUser = async (req, res) => {
   }
 
   try {
-    // Find user by email
     const user = await findUserByEmail(email);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Validate password
     await validatePassword(password, user.password);
 
-    // Generate JWT token
     const token = generateToken(user.id);
-
     res.status(200).json({ token });
   } catch (error) {
     logger.error(`Login error for user ${email}: ${error.message}`);
@@ -33,4 +31,26 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { loginUser };
+// Register user
+const registerUser = async (req, res) => {
+  const { username, email, password, password2 } = req.body;
+
+  if (!username || !email || !password || !password2) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const result = await createUser(username, email, password, password2);
+    res.status(201).json(result);
+  } catch (error) {
+    logger.error("Error in user registration:", error.message);
+    const statusCode =
+      error.message === "User already exists" ||
+      error.message === "Passwords do not match"
+        ? 400
+        : 500;
+    res.status(statusCode).json({ error: error.message });
+  }
+};
+
+module.exports = { loginUser, registerUser };

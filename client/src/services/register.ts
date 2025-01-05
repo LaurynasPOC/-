@@ -27,7 +27,10 @@ const register = async (
   ) => void
 ): Promise<RegisterResponse> => {
   try {
-    const response = await api.post<RegisterResponse>("/api/register", newUser);
+    const response = await api.post<RegisterResponse>(
+      "/api/auth/register",
+      newUser
+    );
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;
