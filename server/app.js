@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const { db } = require("./database");
+const db = require("./config/database");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const app = express();
-const registerRouter = require("./controllers/register");
 
 //routes
 const emailRoutes = require("./routes/emailRoutes");
@@ -25,7 +24,6 @@ app.use(cors());
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-// app.use("/api/register", registerRouter);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
 app.get("/", (req, res) => {

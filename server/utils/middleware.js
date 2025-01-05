@@ -1,5 +1,5 @@
 const logger = require("./logger");
-
+const db = require("../config/database");
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
   logger.info("Path:  ", request.path);
