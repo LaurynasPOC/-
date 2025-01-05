@@ -13,10 +13,16 @@ const db = mysql.createConnection({
 });
 
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Use your preferred service
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
-    user: "login.mailer123@gmail.com",
-    pass: "testas123!",
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false, // Prevent TLS errors, useful for development
   },
 });
 
@@ -46,7 +52,7 @@ const createUser = async (username, email, password, password2) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const verificationToken = crypto.randomBytes(20).toString("hex");
   const sql =
-    "INSERT INTO users_data (username, email, password, verificationToken) VALUES (?, ?, ?, ?)";
+    "INSERT INTO users_data (username, email, password, verificationToken, isVerified) VALUES (?, ?, ?, ?, false)";
 
   try {
     const result = await new Promise((resolve, reject) => {
@@ -63,16 +69,18 @@ const createUser = async (username, email, password, password2) => {
       );
     });
 
-    // Send verification email
+    const verificationLink = `http://localhost:5000/api/verify-email?token=${verificationToken}`;
+
     const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
+      from: "YourApp",
       to: email,
       subject: "Verify Your Email",
-      text: `Please verify your email by clicking on the following link: http://yourdomain.com/verify-email?token=${verificationToken}`,
+      text: `Please verify your email by clicking the following link: ${verificationLink}`,
     };
 
     await transporter.sendMail(mailOptions);
     logger.info("Verification email sent to:", email);
+
     return {
       id: result.insertId,
       message: "User created. Verification email sent.",

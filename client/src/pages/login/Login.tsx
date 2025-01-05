@@ -4,8 +4,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Buttons";
 import { SectionWrapper, Container } from "../../components/wrappers";
 import loginService from "../../services/login";
-import { useAlert } from "../../components/hooks/useAlert";
-import { AxiosError } from "axios";
+import { useAlert } from "../../components/hooks/useAlertNotifier";
 
 interface FormErrors {
   email?: string;
@@ -53,7 +52,7 @@ const Login = () => {
     console.log(validateForm());
     if (validateForm()) {
       try {
-        const result = await loginService({ email, password });
+        const result = await loginService({ email, password }, alert);
         console.log(result);
         if (result) {
           setEmail("");
@@ -61,18 +60,7 @@ const Login = () => {
           alert("success", "Prisijungimas sekmingas!");
         }
       } catch (error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response) {
-          console.error("Error data:", axiosError.response.data);
-          console.error("Status code:", axiosError.response.status);
-          if (axiosError.response.status === 401) {
-            alert("error", "Blogi prisijungimo duomenys");
-          } else if (axiosError.response.status === 400) {
-            alert("error", "Toks vartotojas nera registruotas");
-          } else {
-            alert("error", "Klaida jungiantis prasome bandyti veliau");
-          }
-        }
+        console.log(error);
       }
     }
   };

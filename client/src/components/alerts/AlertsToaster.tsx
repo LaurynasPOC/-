@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { selectNotificationMessages } from "../../state/slices/alertSlice";
 
 export interface AlertMessage {
-  id: string;
   message: string;
   type: "info" | "success" | "warning" | "error";
 }
@@ -18,7 +17,7 @@ const AlertContainer: React.FC = () => {
   return (
     <AlertsContainerStyles>
       {messages.map((msg) => (
-        <Alert key={msg.id} message={msg.text} type={msg.type} id={msg.id} />
+        <Alert key={msg.id} message={msg.text} type={msg.type} />
       ))}
     </AlertsContainerStyles>
   );

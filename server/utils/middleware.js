@@ -8,6 +8,23 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
+const requireVerifiedEmail = (req, res, next) => {
+  const userId = req.userId;
+
+  const sql = "SELECT isVerified FROM users_data WHERE id = ?";
+  db.query(sql, [userId], (err, results) => {
+    if (err) {
+      logger.error("Database error:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    if (!results.length || !results[0].isVerified) {
+      return res.status(403).json({ error: "Email not verified" });
+    }
+
+    next();
+  });
+};
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -28,4 +45,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  requireVerifiedEmail,
 };

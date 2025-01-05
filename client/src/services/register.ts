@@ -19,14 +19,39 @@ const api = axios.create({
   timeout: 10000,
 });
 
-const register = async (newUser: User): Promise<RegisterResponse> => {
-  return api
-    .post<RegisterResponse>("/api/register", newUser)
-    .then((response) => response.data)
-    .catch((error: AxiosError) => {
-      console.log(error);
-      throw error;
-    });
+const register = async (
+  newUser: User,
+  alert: (
+    type: "info" | "success" | "warning" | "error",
+    message: string
+  ) => void
+): Promise<RegisterResponse> => {
+  try {
+    const response = await api.post<RegisterResponse>("/api/register", newUser);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.log(axiosError);
+
+    if (axiosError.response) {
+      console.error("Error data:", axiosError.response.data);
+      console.error("Status code:", axiosError.response.status);
+
+      switch (axiosError.response.status) {
+        case 409: // Assuming 409 could mean duplicate user or similar issue
+          alert("error", "Vartotojas su tokiu el. paštu jau egzistuoja");
+          break;
+        case 400: // Bad request, possibly validation errors
+          alert("error", "Netinkamai užpildyti duomenys");
+          break;
+        default:
+          alert("error", "Registracijos klaida. Bandykite dar kartą.");
+          break;
+      }
+    }
+
+    throw axiosError;
+  }
 };
 
 export default register;

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RegisterFormWrapper } from "./styled";
 import Input from "../../components/Input";
 import Button from "../../components/Buttons";
-import { useAlert } from "../../components/hooks/useAlert";
+import { useAlert } from "../../components/hooks/useAlertNotifier";
 import {
   setField,
   setErrors,
@@ -13,7 +13,6 @@ import {
 } from "../../state/slices/registerSlice";
 import registerService from "../../services/register";
 import { FormData } from "../../state/slices/registerSlice";
-import { AxiosError } from "axios";
 
 const Register: React.FC = () => {
   const dispatch = useDispatch();
@@ -63,27 +62,21 @@ const Register: React.FC = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const result = await registerService({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          password2: formData.repeatPassword,
-        });
+        const result = await registerService(
+          {
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            password2: formData.repeatPassword,
+          },
+          alert
+        );
         if (result) {
           dispatch(resetForm());
           alert("success", "Registracija sėkminga!");
         }
       } catch (error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response) {
-          console.error("Error data:", axiosError.response.data);
-          console.error("Status code:", axiosError.response.status);
-          if (axiosError.response.status === 409) {
-            alert("error", "El. paštas jau yra registruotas");
-          } else {
-            alert("error", "An unexpected error occurred");
-          }
-        }
+        console.error(error);
       }
     }
   };
