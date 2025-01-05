@@ -23,7 +23,10 @@ const login = async (
   ) => void
 ): Promise<LoginResponse> => {
   try {
-    const response = await api.post<LoginResponse>("/api/login", credentials);
+    const response = await api.post<LoginResponse>(
+      "/api/auth/login",
+      credentials
+    );
     localStorage.setItem("token", response.data.token);
     return response.data;
   } catch (error) {

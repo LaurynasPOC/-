@@ -69,7 +69,7 @@ const createUser = async (username, email, password, password2) => {
       );
     });
 
-    const verificationLink = `http://localhost:5000/api/verify-email?token=${verificationToken}`;
+    const verificationLink = `http://localhost:5000/api/email/verify-email?token=${verificationToken}`;
 
     const mailOptions = {
       from: "YourApp",

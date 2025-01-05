@@ -5,8 +5,10 @@ const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const app = express();
 const registerRouter = require("./controllers/register");
-const loginRouter = require("./controllers/login");
-const verifyRouter = require("./controllers/verifyRouter");
+
+//routes
+const emailRoutes = require("./routes/emailRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const { requireVerifiedEmail } = require("./utils/middleware");
 
@@ -24,9 +26,8 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 
 app.use("/api/register", registerRouter);
-app.use("/api/login", loginRouter);
-app.use("/api", verifyRouter);
-
+app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
 app.get("/", (req, res) => {
   db.query(`SELECT * FROM users_data`, (err, results) => {
     if (err) throw err;
