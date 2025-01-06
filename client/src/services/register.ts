@@ -34,7 +34,6 @@ const register = async (
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;
-    console.log(axiosError);
 
     if (axiosError.response) {
       console.error("Error data:", axiosError.response.data);

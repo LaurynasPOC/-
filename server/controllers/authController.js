@@ -44,12 +44,12 @@ const registerUser = async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     logger.error("Error in user registration:", error.message);
-    const statusCode =
-      error.message === "User already exists" ||
-      error.message === "Passwords do not match"
-        ? 400
-        : 500;
-    res.status(statusCode).json({ error: error.message });
+
+    if (error.message === "User already exists") {
+      return res.status(409).json({ error: error.message });
+    }
+
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
