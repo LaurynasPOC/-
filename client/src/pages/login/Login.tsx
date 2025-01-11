@@ -5,6 +5,7 @@ import Button from "../../components/Buttons";
 import { SectionWrapper, Container } from "../../components/wrappers";
 import loginService from "../../services/login";
 import { useAlert } from "../../components/hooks/useAlertNotifier";
+import GoogleAuth from "./GoogleAuthLogin";
 
 interface FormErrors {
   email?: string;
@@ -87,6 +88,7 @@ const Login = () => {
             Prisijungti
           </Button>
         </LoginFormWrapper>
+        <GoogleAuth />
       </Container>
     </SectionWrapper>
   );

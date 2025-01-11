@@ -4,6 +4,7 @@ import { GlobalStyle } from "./styles/globalStyles";
 import Main from "./pages/Main";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import Dashboard from "./components/Dashboard";
 
 const App = () => {
   return (
@@ -19,6 +20,9 @@ const App = () => {
         </Routes>
         <Routes>
           <Route path="/register" element={<Register />} />
+        </Routes>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </>

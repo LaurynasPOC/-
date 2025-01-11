@@ -4,10 +4,13 @@ const db = require("./config/database");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const app = express();
-
+const passport = require("passport");
+const session = require("express-session");
+require("dotenv").config();
 //routes
 const emailRoutes = require("./routes/emailRoutes");
 const authRoutes = require("./routes/authRoutes");
+require("./services/googleAuth");
 
 const { requireVerifiedEmail } = require("./utils/middleware");
 
@@ -31,6 +34,52 @@ app.get("/", (req, res) => {
     if (err) throw err;
     res.send(results);
   });
+});
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(
+  session({
+    secret: process.env.COOKIE_KEY || "default_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: false,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    res.redirect("http://localhost:5173/dashboard"); // Redirect to React app after login
+  }
+);
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
+
+app.get("/current_user", (req, res) => {
+  res.send(req.user);
 });
 
 app.get("/protected-route", requireVerifiedEmail, (req, res) => {
