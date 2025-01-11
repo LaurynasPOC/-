@@ -69,13 +69,20 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("http://localhost:5173/dashboard"); // Redirect to React app after login
+    res.redirect("http://localhost:5173/dashboard");
   }
 );
 
-app.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("/");
+app.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid");
+      res.redirect("http://localhost:5173/");
+    });
+  });
 });
 
 app.get("/current_user", (req, res) => {
