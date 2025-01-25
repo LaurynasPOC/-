@@ -5,6 +5,7 @@ import Main from "./pages/Main";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Dashboard from "./components/Dashboard";
+import GoogleAuth from "./pages/login/GoogleAuthLogin";
 
 const App = () => {
   return (
@@ -14,15 +15,14 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Main />} />
-        </Routes>
-        <Routes>
+
           <Route path="/login" element={<Login />} />
-        </Routes>
-        <Routes>
+
           <Route path="/register" element={<Register />} />
-        </Routes>
-        <Routes>
+
           <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/google-auth" element={<GoogleAuth />} />
         </Routes>
       </BrowserRouter>
     </>

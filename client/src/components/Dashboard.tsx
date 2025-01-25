@@ -11,21 +11,26 @@ interface User {
 const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
-  // ✅ Correct way to access the environment variable in Vite
   const backendURL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
   useEffect(() => {
+    let isMounted = true;
     axios
-      .get<User>(`${backendURL}/current_user`, {
+      .get<User>(`${backendURL}/api/auth/current_user`, {
         withCredentials: true,
       })
-      .then((res) => setUser(res.data))
+      .then((res) => {
+        if (isMounted) setUser(res.data);
+      })
       .catch((err) => console.error("Error fetching user:", err));
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const logout = () => {
-    window.open(`${backendURL}/logout`, "_self");
+    window.open(`${backendURL}/api/auth/logout`, "_self");
   };
 
   return (
@@ -34,8 +39,15 @@ const Dashboard: React.FC = () => {
       {user ? (
         <div>
           <h3>Welcome, {user.displayName}</h3>
-          {user.photos && user.photos.length > 0 && (
-            <img src={user.photos[0].value} alt="Profile" />
+          {user.photos && user.photos.length > 0 ? (
+            <img
+              src={user.photos[0].value}
+              alt="Profile"
+              loading="lazy"
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+            />
+          ) : (
+            <p>No profile picture available</p>
           )}
           <button onClick={logout}>Logout</button>
         </div>

@@ -8,6 +8,7 @@ interface Credentials {
 
 interface LoginResponse {
   token: string;
+  username: string;
 }
 
 const api = axios.create({

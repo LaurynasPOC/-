@@ -3,17 +3,17 @@ const cors = require("cors");
 const db = require("./config/database");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
-const app = express();
 const passport = require("passport");
-const session = require("express-session");
 require("dotenv").config();
-//routes
+
+const app = express();
+
+// Load Routes
 const emailRoutes = require("./routes/emailRoutes");
 const authRoutes = require("./routes/authRoutes");
-require("./services/googleAuth");
+require("./services/googleAuth"); // ✅ Load Google Strategy
 
-const { requireVerifiedEmail } = require("./utils/middleware");
-
+// Database Connection
 db.connect((err) => {
   if (err) {
     logger.error("Error connecting to database: " + err.message);
@@ -23,78 +23,38 @@ db.connect((err) => {
   }
 });
 
-app.use(cors());
+// CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Update this to match your client URL
+    credentials: true,
+  })
+);
+
+// Middleware
 app.use(express.json());
 app.use(middleware.requestLogger);
 
+// Initialize Passport
+app.use(passport.initialize());
+
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
+
+// Default Route
 app.get("/", (req, res) => {
-  db.query(`SELECT * FROM users_data`, (err, results) => {
+  db.query("SELECT * FROM users_data", (err, results) => {
     if (err) throw err;
     res.send(results);
   });
 });
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
-app.use(
-  session({
-    secret: process.env.COOKIE_KEY || "default_secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: false,
-    },
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Routes
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    res.redirect("http://localhost:5173/dashboard");
-  }
-);
-
-app.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-    req.session.destroy(() => {
-      res.clearCookie("connect.sid");
-      res.redirect("http://localhost:5173/");
-    });
-  });
-});
-
-app.get("/current_user", (req, res) => {
-  res.send(req.user);
-});
-
-app.get("/protected-route", requireVerifiedEmail, (req, res) => {
-  res.send("Welcome to the protected route!");
-});
+// Error Handling
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
+// Start Server
 app.listen(5000, () => {
   console.log("Express server listening on port 5000");
 });

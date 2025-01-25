@@ -1,3 +1,5 @@
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const {
   findUserByEmail,
   validatePassword,
@@ -6,7 +8,6 @@ const {
 } = require("../services/authService");
 const logger = require("../utils/logger");
 
-// Login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -23,7 +24,7 @@ const loginUser = async (req, res) => {
     await validatePassword(password, user.password);
 
     const token = generateToken(user.id);
-    res.status(200).json({ token });
+    res.status(200).json({ token, username: user.username });
   } catch (error) {
     logger.error(`Login error for user ${email}: ${error.message}`);
     const statusCode = error.message === "Password incorrect" ? 401 : 500;
@@ -31,7 +32,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Register user
 const registerUser = async (req, res) => {
   const { username, email, password, password2 } = req.body;
 
@@ -53,4 +53,49 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { loginUser, registerUser };
+const googleCallback = (req, res) => {
+  const { token, username } = req.user;
+  const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+  res.redirect(
+    `${frontendURL}/google-auth?token=${token}&username=${username}`
+  );
+};
+
+const logoutUser = (req, res) => {
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+const googleLogin = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+const getCurrentUser = (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "yourSecretKey"
+    );
+    res.status(200).json(decoded);
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+module.exports = {
+  loginUser,
+  registerUser,
+  getCurrentUser,
+  logoutUser,
+  googleCallback,
+  googleLogin,
+};

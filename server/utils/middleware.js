@@ -1,5 +1,7 @@
+const jwt = require("jsonwebtoken");
 const logger = require("./logger");
 const db = require("../config/database");
+
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
   logger.info("Path:  ", request.path);
@@ -9,22 +11,36 @@ const requestLogger = (request, response, next) => {
 };
 
 const requireVerifiedEmail = (req, res, next) => {
-  const userId = req.userId;
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
 
-  const sql = "SELECT isVerified FROM users_data WHERE id = ?";
-  db.query(sql, [userId], (err, results) => {
-    if (err) {
-      logger.error("Database error:", err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "yourSecretKey"
+    );
+    const userId = decoded.userId;
 
-    if (!results.length || !results[0].isVerified) {
-      return res.status(403).json({ error: "Email not verified" });
-    }
+    const sql = "SELECT isVerified FROM users_data WHERE id = ?";
+    db.query(sql, [userId], (err, results) => {
+      if (err) {
+        logger.error("Database error:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
 
-    next();
-  });
+      if (!results.length || !results[0].isVerified) {
+        return res.status(403).json({ error: "Email not verified" });
+      }
+
+      next();
+    });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
 };
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };

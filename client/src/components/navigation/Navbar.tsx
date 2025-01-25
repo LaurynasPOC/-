@@ -2,6 +2,9 @@ import styled from "styled-components";
 import Button from "../Buttons";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { RootState } from "../../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../state/slices/authSlice";
 
 const NavbarStyles = styled.nav`
   width: 100%;
@@ -21,7 +24,12 @@ const Logo = styled(Link)`
 `;
 
 export const Navbar: React.FC = () => {
+  const { isAuthenticated, username } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogin = () => {
     navigate("/login");
   };
@@ -29,17 +37,32 @@ export const Navbar: React.FC = () => {
     navigate("/register");
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
   return (
     <NavbarStyles>
       <Logo to="/">LOGO</Logo>
-      <div>
-        <Button onClick={handleLogin} variant="primary" margin="0 10px 0 0">
-          Prisijungti
-        </Button>
-        <Button onClick={handleRegister} variant="secondary">
-          Registruotis
-        </Button>
-      </div>
+      {isAuthenticated ? (
+        <>
+          <span>Welcome, {username}</span>
+          <Button onClick={handleLogout} variant="secondary">
+            Atsijungti
+          </Button>
+          <Button onClick={() => navigate("/user-info")}>Mano profilis</Button>
+        </>
+      ) : (
+        <div>
+          <Button onClick={handleLogin} variant="primary" margin="0 10px 0 0">
+            Prisijungti
+          </Button>
+          <Button onClick={handleRegister} variant="secondary">
+            Registruotis
+          </Button>
+        </div>
+      )}
     </NavbarStyles>
   );
 };
