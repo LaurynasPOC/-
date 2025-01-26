@@ -17,7 +17,7 @@ const GoogleAuth = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const username = urlParams.get("username");
-    console.log(username, token);
+
     if (token && username) {
       dispatch(login({ token, username }));
       navigate("/");

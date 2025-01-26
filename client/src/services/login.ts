@@ -28,7 +28,6 @@ const login = async (
       "/api/auth/login",
       credentials
     );
-    localStorage.setItem("token", response.data.token);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;

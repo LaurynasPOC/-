@@ -8,6 +8,8 @@ const {
 } = require("../services/authService");
 const logger = require("../utils/logger");
 
+const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -55,14 +57,14 @@ const registerUser = async (req, res) => {
 
 const googleCallback = (req, res) => {
   const { token, username } = req.user;
-  const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+
   res.redirect(
     `${frontendURL}/google-auth?token=${token}&username=${username}`
   );
 };
 
 const logoutUser = (req, res) => {
-  res.status(200).json({ message: "Logged out successfully" });
+  res.redirect(frontendURL);
 };
 
 const googleLogin = passport.authenticate("google", {

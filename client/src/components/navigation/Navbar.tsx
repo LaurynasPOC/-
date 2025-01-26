@@ -38,8 +38,10 @@ export const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
+    const backendURL =
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    window.open(`${backendURL}/api/auth/logout`, "_self");
     dispatch(logout());
-    navigate("/");
   };
 
   return (
