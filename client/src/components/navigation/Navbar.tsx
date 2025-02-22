@@ -48,13 +48,15 @@ export const Navbar: React.FC = () => {
     <NavbarStyles>
       <Logo to="/">LOGO</Logo>
       {isAuthenticated ? (
-        <>
+        <div>
           <span>Welcome, {username}</span>
+          <Button margin="0 10px" onClick={() => navigate("/user-info")}>
+            Mano profilis
+          </Button>
           <Button onClick={handleLogout} variant="secondary">
             Atsijungti
           </Button>
-          <Button onClick={() => navigate("/user-info")}>Mano profilis</Button>
-        </>
+        </div>
       ) : (
         <div>
           <Button onClick={handleLogin} variant="primary" margin="0 10px 0 0">

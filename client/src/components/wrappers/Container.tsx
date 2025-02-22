@@ -7,8 +7,8 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
-  max-width: "1300px";
-  padding: "40px";
+  max-width: 1300px;
+  padding: 40px;
   margin-left: auto;
   margin-right: auto;
   @media ${laptop} {

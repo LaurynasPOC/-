@@ -109,4 +109,32 @@ export const GlobalStyle = createGlobalStyle`
             font-size: 16px;
         }
     }
+    .pac-container {
+    background-color: #fff !important;
+    border-radius: 5px !important;
+    border: 1px solid var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    z-index: 10000 !important;
+  }
+
+  .pac-item {
+    padding: 12px !important;
+    font-size: 16px !important;
+    color: #333 !important;
+  }
+
+  .pac-item:hover {
+    background-color: #f0f0f0 !important;
+  }
+
+  .pac-item-query {
+    color: var(--dgrey) !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    margin-right: 5px !important;
+  }
+  .pac-icon {
+    display: none !important;
+  }
+ 
 `;

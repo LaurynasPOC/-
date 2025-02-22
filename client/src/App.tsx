@@ -4,7 +4,7 @@ import { GlobalStyle } from "./styles/globalStyles";
 import Main from "./pages/Main";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import UserInfo from "./components/UserInfo";
+import UserInfo from "./pages/user-info/UserInfo";
 import GoogleAuth from "./pages/login/GoogleAuthLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 
