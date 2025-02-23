@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Autocomplete } from "@react-google-maps/api";
+import styled from "styled-components";
 
 interface AddressDetails {
   street?: string;
@@ -61,21 +62,15 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           fields: ["formatted_address", "geometry", "address_components"],
         }}
       >
-        <input
+        <Input
+          error={error}
           type="text"
           value={value}
           onChange={(e) => {
             onChange(e.target.value);
             onPlaceSelected(false);
           }}
-          placeholder="Įveskite adresą (gatvė ir pašto kodas privalomi)"
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "16px",
-            border: error ? "1px solid red" : "1px solid #ddd",
-            borderRadius: "8px",
-          }}
+          placeholder="Įveskite adresą"
         />
       </Autocomplete>
       {error && <p style={{ color: "red", marginTop: "5px" }}>{error}</p>}
@@ -84,3 +79,30 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 };
 
 export default AddressAutocomplete;
+
+interface Props {
+  error?: string;
+}
+
+const Input = styled.input<Props>`
+  padding: 15px;
+  max-width: 400px;
+  margin-bottom: 25px;
+  background: var(--white);
+  color: var(--black);
+  border: ${({ error }) =>
+    error ? "1px solid var(--error)" : "1px solid var(--primary)"};
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  transition: 0.6s;
+  &:focus,
+  &:hover {
+    border-color: var(--tint3);
+    outline: none;
+  }
+  &::placeholder {
+    color: var(--secondary);
+    font-size: 14px;
+  }
+`;
