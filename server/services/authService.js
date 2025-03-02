@@ -24,8 +24,8 @@ const validatePassword = async (inputPassword, hashedPassword) => {
 };
 
 // Generate JWT token
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || "yourSecretKey", {
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET || "yourSecretKey", {
     expiresIn: "1h",
   });
 };
@@ -42,6 +42,8 @@ const checkIfUserExists = (email) => {
 };
 
 // Create a new user
+const { v4: uuidv4 } = require("uuid");
+
 const createUser = async (username, email, password, password2) => {
   if (password !== password2) {
     throw new Error("Passwords do not match");
@@ -55,14 +57,20 @@ const createUser = async (username, email, password, password2) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const verificationToken = crypto.randomBytes(20).toString("hex");
 
+  const id = uuidv4();
+
   return new Promise((resolve, reject) => {
     const sql =
-      "INSERT INTO users_data (username, email, password, verificationToken, isVerified) VALUES (?, ?, ?, ?, false)";
+      "INSERT INTO users_data (id, username, email, password, verificationToken, isVerified) VALUES (?, ?, ?, ?, ?, false)";
+
     db.query(
       sql,
-      [username, email, hashedPassword, verificationToken],
+      [id, username, email, hashedPassword, verificationToken],
       async (err, result) => {
-        if (err) return reject(new Error("Error saving user to database"));
+        if (err) {
+          console.error("Database Insert Error:", err);
+          return reject(new Error(`Database error: ${err.message}`));
+        }
 
         try {
           await sendVerificationEmail(email, verificationToken);

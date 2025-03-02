@@ -2,15 +2,17 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./config/database");
 const logger = require("./utils/logger");
+const bodyParser = require("body-parser");
 const middleware = require("./utils/middleware");
 const passport = require("passport");
 require("dotenv").config();
 
 const app = express();
-
+app.use(bodyParser.json());
 // Load Routes
 const emailRoutes = require("./routes/emailRoutes");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 require("./services/googleAuth"); // ✅ Load Google Strategy
 
 // Database Connection
@@ -41,6 +43,7 @@ app.use(passport.initialize());
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api", userRoutes);
 
 // Default Route
 app.get("/", (req, res) => {

@@ -12,28 +12,30 @@ const requestLogger = (request, response, next) => {
 
 const requireVerifiedEmail = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
+  if (!token) return res.status(401).json({ error: "Not authenticated" });
 
   try {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "yourSecretKey"
     );
-    const userId = decoded.userId;
+    const id = decoded.id;
+    console.log("Decoded userId:", id);
 
     const sql = "SELECT isVerified FROM users_data WHERE id = ?";
-    db.query(sql, [userId], (err, results) => {
-      if (err) {
-        logger.error("Database error:", err);
-        return res.status(500).json({ error: "Internal server error" });
+    db.query(sql, [id], (err, results) => {
+      if (err) return res.status(500).json({ error: "Internal server error" });
+
+      if (!results.length) {
+        return res.status(404).json({ error: "User not found" });
       }
 
-      if (!results.length || !results[0].isVerified) {
+      const isVerified = Number(results[0].isVerified);
+      if (isVerified !== 1) {
         return res.status(403).json({ error: "Email not verified" });
       }
 
+      req.user = { id };
       next();
     });
   } catch (error) {
