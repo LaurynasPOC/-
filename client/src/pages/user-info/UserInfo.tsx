@@ -6,6 +6,8 @@ import Button from "../../components/Buttons";
 import AddressAutocomplete from "../../components/AddressAutocomplete";
 import GoogleMapsProvider from "../../components/GoogleMapsProvider";
 import { getUserProfile, updateUserProfile } from "../../services/userInfo";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
 
 interface AddressDetails {
   street?: string;
@@ -13,7 +15,7 @@ interface AddressDetails {
 }
 
 const UserInfo: React.FC = () => {
-  const token = localStorage.getItem("token") ?? "";
+  const { token } = useSelector((state: RootState) => state.auth);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

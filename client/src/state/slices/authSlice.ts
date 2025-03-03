@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { isTokenValid } from "../../utils/auth"; // Import utility function
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -6,10 +7,13 @@ interface AuthState {
   username: string | null;
 }
 
+const storedToken = localStorage.getItem("token");
+const storedUsername = localStorage.getItem("username");
+
 const initialState: AuthState = {
-  isAuthenticated: !!localStorage.getItem("token"),
-  token: localStorage.getItem("token"),
-  username: localStorage.getItem("username"),
+  isAuthenticated: isTokenValid(storedToken),
+  token: isTokenValid(storedToken) ? storedToken : null,
+  username: isTokenValid(storedToken) ? storedUsername : null,
 };
 
 const authSlice = createSlice({

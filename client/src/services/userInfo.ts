@@ -32,7 +32,7 @@ export const getUserProfile = async (
 };
 
 export const updateUserProfile = async (
-  token: string,
+  token: string | null,
   userData: UserData
 ): Promise<{ success: boolean; message?: string }> => {
   try {

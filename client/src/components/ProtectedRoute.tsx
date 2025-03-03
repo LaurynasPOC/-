@@ -1,10 +1,12 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../state/store";
 
 const ProtectedRoute: React.FC = () => {
-  const token = localStorage.getItem("token");
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return <Outlet />;
