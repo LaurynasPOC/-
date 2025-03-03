@@ -9,11 +9,6 @@ import { getUserProfile, updateUserProfile } from "../../services/userInfo";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 
-interface AddressDetails {
-  street?: string;
-  postalCode?: string;
-}
-
 const UserInfo: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
   const [userName, setUserName] = useState("");
@@ -22,18 +17,17 @@ const UserInfo: React.FC = () => {
   const [address, setAddress] = useState("");
   const [isAddressValid, setIsAddressValid] = useState(false);
   const [addressError, setAddressError] = useState("");
-  const [addressDetails, setAddressDetails] = useState<AddressDetails>({});
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!token) return;
       const result = await getUserProfile(token);
-      console.log(result);
       if (result.success && result.user) {
         setUserName(result.user.username || "");
         setEmail(result.user.email || "");
         setPhone(result.user.phone || "");
         setAddress(result.user.address || "");
+        setIsAddressValid(true);
       } else {
         console.error(result.message || "Failed to load user data");
       }
@@ -45,11 +39,7 @@ const UserInfo: React.FC = () => {
   const submitUserInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (
-      !isAddressValid ||
-      !addressDetails.street ||
-      !addressDetails.postalCode
-    ) {
+    if (!isAddressValid) {
       setAddressError("Adresas turi turėti gatvės pavadinimą ir pašto kodą.");
       return;
     }
@@ -93,9 +83,8 @@ const UserInfo: React.FC = () => {
               setAddress(value);
               setAddressError("");
             }}
-            onPlaceSelected={(isValid, details) => {
+            onPlaceSelected={(isValid) => {
               setIsAddressValid(isValid);
-              setAddressDetails(details ?? {});
               if (!isValid)
                 setAddressError(
                   "Adresas turi turėti gatvės pavadinimą ir pašto kodą."
