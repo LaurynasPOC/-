@@ -9,6 +9,7 @@ interface InputProps {
   pattern?: string;
   required?: boolean;
   errormessage?: string;
+  disabled?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -19,6 +20,7 @@ const Input: React.FC<InputProps> = ({
   type,
   required,
   errormessage,
+  disabled,
 }) => (
   <StyledInput errormessage={errormessage}>
     <input
@@ -30,6 +32,7 @@ const Input: React.FC<InputProps> = ({
       onChange={onChange}
       required={required}
       placeholder=" "
+      disabled={disabled}
     />
     <label htmlFor={label?.replace(" ", "").toLowerCase()}>{label}</label>
     {errormessage && <p>{errormessage}</p>}
@@ -40,6 +43,7 @@ export default Input;
 
 interface StyleProps {
   errormessage?: string;
+  disabled?: boolean;
 }
 
 const StyledInput = styled.div<StyleProps>`
@@ -71,6 +75,12 @@ const StyledInput = styled.div<StyleProps>`
     &:hover {
       border-color: var(--tint3);
       outline: none;
+    }
+    &:disabled {
+      background: var(--silver);
+      color: var(--grey);
+      cursor: not-allowed;
+      border-color: var(--warning);
     }
   }
   input:not(:placeholder-shown) + label,

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "../../components/wrappers";
 import Input from "../../components/Input";
 import styled from "styled-components";
 import Button from "../../components/Buttons";
 import AddressAutocomplete from "../../components/AddressAutocomplete";
 import GoogleMapsProvider from "../../components/GoogleMapsProvider";
+import { getUserProfile, updateUserProfile } from "../../services/userInfo";
 
 interface AddressDetails {
   street?: string;
@@ -12,8 +13,8 @@ interface AddressDetails {
 }
 
 const UserInfo: React.FC = () => {
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
+  const token = localStorage.getItem("token") ?? "";
+  const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -21,10 +22,27 @@ const UserInfo: React.FC = () => {
   const [addressError, setAddressError] = useState("");
   const [addressDetails, setAddressDetails] = useState<AddressDetails>({});
 
-  const submitUserInfo = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!token) return;
+      const result = await getUserProfile(token);
+      console.log(result);
+      if (result.success && result.user) {
+        setUserName(result.user.username || "");
+        setEmail(result.user.email || "");
+        setPhone(result.user.phone || "");
+        setAddress(result.user.address || "");
+      } else {
+        console.error(result.message || "Failed to load user data");
+      }
+    };
+
+    fetchUserData();
+  }, [token]);
+
+  const submitUserInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validate street and postal code
     if (
       !isAddressValid ||
       !addressDetails.street ||
@@ -34,8 +52,13 @@ const UserInfo: React.FC = () => {
       return;
     }
 
-    console.log(name, surname, email, phone, address, addressDetails);
-    alert("Forma sėkmingai pateikta su tinkamu adresu!");
+    const userData = {
+      username: userName,
+      email,
+      phone,
+      address,
+    };
+    await updateUserProfile(token, userData);
   };
 
   return (
@@ -44,18 +67,13 @@ const UserInfo: React.FC = () => {
         <UserInfoWrapper onSubmit={submitUserInfo}>
           <h4>Mano Duomenys</h4>
           <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             type="text"
-            label="Vardas"
+            label="Vartotojo vardas"
           />
           <Input
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            type="text"
-            label="Pavardė"
-          />
-          <Input
+            disabled
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"

@@ -20,7 +20,6 @@ const requireVerifiedEmail = (req, res, next) => {
       process.env.JWT_SECRET || "yourSecretKey"
     );
     const id = decoded.id;
-    console.log("Decoded userId:", id);
 
     const sql = "SELECT isVerified FROM users_data WHERE id = ?";
     db.query(sql, [id], (err, results) => {

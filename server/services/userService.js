@@ -13,27 +13,22 @@ const getUserById = (id) => {
 // Create or update user data for the logged-in user
 const createOrUpdateUser = (id, userData) => {
   return new Promise((resolve, reject) => {
-    const { name, lastname, address, phone, email } = userData;
+    const { username, address, phone, email } = userData;
 
     const query = `
-      INSERT INTO users_data (id, name, lastname, address, phone, email)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO users_data (id, username, address, phone, email)
+      VALUES (?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
-        name = VALUES(name),
-        lastname = VALUES(lastname),
+        username = VALUES(username),
         address = VALUES(address),
         phone = VALUES(phone),
         email = VALUES(email)
     `;
 
-    db.query(
-      query,
-      [id, name, lastname, address, phone, email],
-      (err, result) => {
-        if (err) reject(err);
-        else resolve({ id: id, ...userData });
-      }
-    );
+    db.query(query, [id, username, address, phone, email], (err, result) => {
+      if (err) reject(err);
+      else resolve({ id: id, ...userData });
+    });
   });
 };
 
