@@ -7,6 +7,7 @@ import Register from "./pages/register/Register";
 import UserInfo from "./pages/user-info/UserInfo";
 import GoogleAuth from "./pages/login/GoogleAuthLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
+import GiveAway from "./pages/give-away-goods/GiveAway";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/user-info" element={<UserInfo />} />
+            <Route path="/give-away" element={<GiveAway />} />
           </Route>
           <Route path="/google-auth" element={<GoogleAuth />} />
         </Routes>

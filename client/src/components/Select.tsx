@@ -1,68 +1,53 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 
-interface InputProps {
+interface SelectProps {
   label: string;
-  value: string | number;
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  type?: "email" | "text" | "password" | "number";
-  pattern?: string;
+  value: string;
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+  options: { value: string; label: string }[];
   required?: boolean;
   errormessage?: string;
   disabled?: boolean;
-  multiline?: boolean;
 }
 
-const Input: React.FC<InputProps> = ({
+const Select: React.FC<SelectProps> = ({
   label,
   value,
   onChange,
-  pattern,
-  type,
+  options,
   required,
   errormessage,
   disabled,
-  multiline = false,
 }) => (
-  <StyledInput errormessage={errormessage}>
-    {multiline ? (
-      <textarea
-        id={label?.replace(/\s+/g, "").toLowerCase()}
-        name={label}
-        value={value}
-        onChange={onChange}
-        required={required}
-        placeholder=" "
-        disabled={disabled}
-      />
-    ) : (
-      <input
-        id={label?.replace(/\s+/g, "").toLowerCase()}
-        name={label}
-        value={value}
-        type={type}
-        pattern={pattern}
-        onChange={onChange}
-        required={required}
-        placeholder=" "
-        disabled={disabled}
-      />
-    )}
-    <label htmlFor={label?.replace(/\s+/g, "").toLowerCase()}>{label}</label>
+  <StyledSelectWrapper errormessage={errormessage}>
+    <select
+      id={label.replace(/\s+/g, "").toLowerCase()}
+      name={label}
+      value={value}
+      onChange={onChange}
+      required={required}
+      disabled={disabled}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+    <label htmlFor={label.replace(/\s+/g, "").toLowerCase()}>{label}</label>
     {errormessage && <p>{errormessage}</p>}
-  </StyledInput>
+  </StyledSelectWrapper>
 );
 
-export default Input;
+export default Select;
 
 interface StyleProps {
   errormessage?: string;
   disabled?: boolean;
 }
 
-const StyledInput = styled.div<StyleProps>`
+const StyledSelectWrapper = styled.div<StyleProps>`
   position: relative;
   margin: 0 auto;
   margin-bottom: 25px;
@@ -71,15 +56,17 @@ const StyledInput = styled.div<StyleProps>`
 
   label {
     position: absolute;
-    left: 0;
-    padding: 15px;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--secondary);
     pointer-events: none;
     transition: 0.4s;
+    background: var(--white);
+    padding: 0 5px;
   }
 
-  input,
-  textarea {
+  select {
     padding: 15px;
     background: var(--white);
     color: var(--black);
@@ -89,11 +76,15 @@ const StyledInput = styled.div<StyleProps>`
     width: 100%;
     font-size: 16px;
     transition: 0.6s;
+    appearance: none;
+    cursor: pointer;
+
     &:focus,
     &:hover {
       border-color: var(--tint3);
       outline: none;
     }
+
     &:disabled {
       background: var(--silver);
       color: var(--grey);
@@ -102,17 +93,10 @@ const StyledInput = styled.div<StyleProps>`
     }
   }
 
-  textarea {
-    min-height: 120px;
-    resize: vertical;
-  }
-
-  input:not(:placeholder-shown) + label,
-  input:focus + label,
-  textarea:not(:placeholder-shown) + label,
-  textarea:focus + label {
+  select:not(:placeholder-shown) + label,
+  select:focus + label {
     color: var(--grey);
-    transform: translateY(-8px) translateX(10px);
+    transform: translateY(-28px) translateX(10px);
     font-size: 12px;
     background: var(--white);
     padding: 2px;

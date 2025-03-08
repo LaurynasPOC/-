@@ -24,9 +24,7 @@ const Logo = styled(Link)`
 `;
 
 export const Navbar: React.FC = () => {
-  const { isAuthenticated, username } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,7 +47,9 @@ export const Navbar: React.FC = () => {
       <Logo to="/">LOGO</Logo>
       {isAuthenticated ? (
         <div>
-          <span>Welcome, {username}</span>
+          <Button onClick={() => navigate("/give-away")}>
+            Atiduodu/Parduodu
+          </Button>
           <Button margin="0 10px" onClick={() => navigate("/user-info")}>
             Mano profilis
           </Button>
