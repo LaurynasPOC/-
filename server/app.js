@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 const emailRoutes = require("./routes/emailRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const productRoutes = require("./routes/productsRoutes");
 require("./services/googleAuth"); // ✅ Load Google Strategy
 
 // Database Connection
@@ -44,6 +45,7 @@ app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api", userRoutes);
+app.use("/api", productRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
