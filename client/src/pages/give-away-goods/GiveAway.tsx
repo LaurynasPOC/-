@@ -4,6 +4,7 @@ import Input from "../../components/Input";
 import { Container } from "../../components/wrappers";
 import Select from "../../components/Select";
 import ImageUpload from "../../components/ImageUpload";
+import { addProduct, ProductData } from "../../services/products";
 
 const GoodsForm: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -41,31 +42,29 @@ const GoodsForm: React.FC = () => {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("token") ?? "";
 
-    if (isForSale && !price) {
-      alert("Price is required when selling.");
-      return;
+    const newProduct: ProductData = {
+      title,
+      description,
+      price,
+      category,
+      condition,
+      isForSale: isForSale === "sale",
+      location,
+      contactInfo,
+      images,
+    };
+
+    const response = await addProduct(token, newProduct);
+
+    if (response.success) {
+      console.log("Product added:", response.product);
+    } else {
+      console.error("Error:", response.message);
     }
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("category", category);
-    formData.append("condition", condition);
-    formData.append("isForSale", String(isForSale));
-    if (isForSale) {
-      formData.append("price", String(price));
-    }
-    formData.append("location", location);
-    formData.append("contactInfo", contactInfo);
-    images.forEach((image) => formData.append("images", image));
-
-    console.log("Form Data Submitted:", Object.fromEntries(formData));
-
-    // Here you would send `formData` to your backend via API
-    // Example: axios.post("/api/upload", formData);
   };
 
   return (

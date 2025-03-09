@@ -1,6 +1,6 @@
 const db = require("../config/database");
 
-const addProduct = (userId, productData) => {
+const addProduct = (userId, productData, imagePaths) => {
   return new Promise((resolve, reject) => {
     const {
       title,
@@ -13,10 +13,13 @@ const addProduct = (userId, productData) => {
       contactInfo,
     } = productData;
 
+    const images = imagePaths ? imagePaths.join(",") : ""; // Store multiple image paths as a string
+
     const sql = `
-        INSERT INTO products (user_id, title, description, price, category, \`condition\`, is_for_sale, location, contact_info)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+          INSERT INTO products 
+          (user_id, title, description, price, category, \`condition\`, is_for_sale, location, contact_info, images)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
     db.query(
       sql,
@@ -27,9 +30,10 @@ const addProduct = (userId, productData) => {
         price,
         category,
         condition,
-        isForSale,
+        isForSale ? 1 : 0,
         location,
         contactInfo,
+        images,
       ],
       (err, result) => {
         if (err) {
@@ -37,7 +41,7 @@ const addProduct = (userId, productData) => {
           reject(err);
         } else {
           console.log("✅ Product Inserted Successfully:", result);
-          resolve({ id: result.insertId, ...productData });
+          resolve({ id: result.insertId, ...productData, images });
         }
       }
     );

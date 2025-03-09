@@ -1,5 +1,5 @@
 const express = require("express");
-const { requireVerifiedEmail } = require("../utils/middleware");
+const { requireVerifiedEmail, upload } = require("../utils/middleware");
 const {
   createProduct,
   getUserProducts,
@@ -8,8 +8,13 @@ const {
 
 const router = express.Router();
 
-router.post("/products", requireVerifiedEmail, createProduct);
-router.get("/products", requireVerifiedEmail, getUserProducts);
-router.delete("products/:id", requireVerifiedEmail, removeProduct);
+router.post(
+  "/",
+  requireVerifiedEmail,
+  upload.array("images", 5),
+  createProduct
+);
+router.get("/", requireVerifiedEmail, getUserProducts);
+router.delete("/:id", requireVerifiedEmail, removeProduct);
 
 module.exports = router;

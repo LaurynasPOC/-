@@ -7,10 +7,12 @@ const {
 const createProduct = async (req, res) => {
   try {
     const userId = req.user.id;
-    const product = await addProduct(userId, req.body);
+    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`); // Store paths
+
+    const product = await addProduct(userId, req.body, imagePaths);
     res.status(201).json(product);
   } catch (error) {
-    console.error("🔥 Database Error:", error);
+    console.error("🔥 Error Adding Product:", error);
     res
       .status(500)
       .json({ error: "Failed to add product", details: error.message });
