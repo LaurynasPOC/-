@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { RootState } from "../../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../state/slices/authSlice";
+import { LogOut, User } from "lucide-react";
 
 const NavbarStyles = styled.nav`
   width: 100%;
@@ -50,11 +51,15 @@ export const Navbar: React.FC = () => {
           <Button onClick={() => navigate("/give-away")}>
             Atiduodu/Parduodu
           </Button>
-          <Button margin="0 10px" onClick={() => navigate("/user-info")}>
-            Mano profilis
+          <Button
+            margin="0 10px"
+            variant="secondary"
+            onClick={() => navigate("/user-info")}
+          >
+            <User size={18} />
           </Button>
           <Button onClick={handleLogout} variant="secondary">
-            Atsijungti
+            <LogOut size={18} />
           </Button>
         </div>
       ) : (

@@ -24,12 +24,16 @@ const Login = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const alert = useAlert();
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setEmail(e.target.value);
     setErrors({ ...errors, email: "" });
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setPassword(e.target.value);
     setErrors({ ...errors, password: "" });
   };
@@ -92,11 +96,11 @@ const Login = () => {
             type="password"
             errormessage={errors.password}
           />
-          <Button variant="primary" type="submit">
+          <Button margin="0 0 10px 0" variant="primary" type="submit">
             Prisijungti
           </Button>
+          <GoogleAuth />
         </LoginFormWrapper>
-        <GoogleAuth />
       </Container>
     </SectionWrapper>
   );
