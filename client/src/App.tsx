@@ -9,6 +9,7 @@ import GoogleAuth from "./pages/login/GoogleAuthLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GiveAway from "./pages/give-away-goods/GiveAway";
 import GoogleMapsProvider from "./components/GoogleMapsProvider";
+import AvailableGoods from "./pages/available-goods/AvailableGoods";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/goods" element={<AvailableGoods />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/user-info" element={<UserInfo />} />
             <Route path="/give-away" element={<GiveAway />} />
