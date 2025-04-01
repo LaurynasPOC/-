@@ -8,10 +8,11 @@ import UserInfo from "./pages/user-info/UserInfo";
 import GoogleAuth from "./pages/login/GoogleAuthLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GiveAway from "./pages/give-away-goods/GiveAway";
+import GoogleMapsProvider from "./components/GoogleMapsProvider";
 
 const App = () => {
   return (
-    <>
+    <GoogleMapsProvider>
       <GlobalStyle />
       <BrowserRouter>
         <Navbar />
@@ -26,7 +27,7 @@ const App = () => {
           <Route path="/google-auth" element={<GoogleAuth />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </GoogleMapsProvider>
   );
 };
 

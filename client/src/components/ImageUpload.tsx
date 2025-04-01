@@ -26,7 +26,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleRemoveImage = (index: number) => {
     removeImage(index);
-    setFileCount(previews.length - 1); // ✅ Update count dynamically
+    setFileCount(previews.length - 1);
   };
 
   return (
@@ -61,7 +61,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
 export default ImageUpload;
 
-// 🎨 Styled Components
 const StyledImageUpload = styled.div`
   position: relative;
   margin: 0 auto;
@@ -74,7 +73,7 @@ const HiddenFileInput = styled.input`
   display: none;
 `;
 
-const CustomFileInput = styled.button`
+const CustomFileInput = styled.button.attrs({ type: "button" })`
   padding: 12px;
   background: var(--white);
   color: var(--black);

@@ -5,29 +5,52 @@ import styled from "styled-components";
 interface AddressDetails {
   street?: string;
   postalCode?: string;
+  lat?: number;
+  lng?: number;
 }
 
 interface AddressAutocompleteProps {
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   onPlaceSelected: (isValid: boolean, placeDetails?: AddressDetails) => void;
   error?: string;
+  setIsAddressValid?: (value: boolean) => void;
 }
 
 const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
+  label = "Address",
   value,
   onChange,
   onPlaceSelected,
   error,
+  setIsAddressValid,
 }) => {
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const handlePlaceChanged = () => {
     const place = autocompleteRef.current?.getPlace();
-    if (place && place.formatted_address && place.address_components) {
+
+    if (
+      place &&
+      place.formatted_address &&
+      place.address_components &&
+      place.geometry
+    ) {
       const addressDetails = extractAddressDetails(place.address_components);
+
+      const lat = place.geometry.location?.lat();
+      const lng = place.geometry.location?.lng();
+
+      addressDetails.lat = lat;
+      addressDetails.lng = lng;
+
       const hasStreet = !!addressDetails.street;
       const hasPostalCode = !!addressDetails.postalCode;
+
+      if (hasStreet && hasPostalCode && setIsAddressValid) {
+        setIsAddressValid(true);
+      }
 
       onChange(place.formatted_address);
       onPlaceSelected(hasStreet && hasPostalCode, addressDetails);
@@ -53,7 +76,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <AutocompleteStyles>
+      <Label htmlFor="address">{label}</Label>
       <Autocomplete
         onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
         onPlaceChanged={handlePlaceChanged}
@@ -63,6 +87,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         }}
       >
         <Input
+          id="address"
           error={error}
           type="text"
           value={value}
@@ -74,7 +99,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         />
       </Autocomplete>
       {error && <p style={{ color: "red", marginTop: "5px" }}>{error}</p>}
-    </div>
+    </AutocompleteStyles>
   );
 };
 
@@ -104,5 +129,21 @@ const Input = styled.input<Props>`
   &::placeholder {
     color: var(--secondary);
     font-size: 14px;
+  }
+`;
+
+const Label = styled.label`
+  position: absolute;
+  left: 0;
+`;
+
+const AutocompleteStyles = styled.div`
+  input {
+    position: relative;
+  }
+
+  label {
+    position: absolute;
+    left: 0;
   }
 `;

@@ -4,7 +4,6 @@ import Input from "../../components/Input";
 import styled from "styled-components";
 import Button from "../../components/Buttons";
 import AddressAutocomplete from "../../components/AddressAutocomplete";
-import GoogleMapsProvider from "../../components/GoogleMapsProvider";
 import { getUserProfile, updateUserProfile } from "../../services/userInfo";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
@@ -17,6 +16,8 @@ const UserInfo: React.FC = () => {
   const [address, setAddress] = useState("");
   const [isAddressValid, setIsAddressValid] = useState(false);
   const [addressError, setAddressError] = useState("");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,56 +50,62 @@ const UserInfo: React.FC = () => {
       email,
       phone,
       address,
+      lat,
+      lng,
     };
     await updateUserProfile(token, userData);
   };
 
   return (
-    <GoogleMapsProvider>
-      <Container>
-        <UserInfoWrapper onSubmit={submitUserInfo}>
-          <h4>Mano Duomenys</h4>
-          <Input
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            type="text"
-            label="Vartotojo vardas"
-          />
-          <Input
-            disabled
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            label="El. paštas"
-          />
-          <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            type="text"
-            label="Telefono numeris"
-          />
-          <AddressAutocomplete
-            value={address}
-            onChange={(value) => {
-              setAddress(value);
+    <Container>
+      <UserInfoWrapper onSubmit={submitUserInfo}>
+        <h4>Mano Duomenys</h4>
+        <Input
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          type="text"
+          label="Vartotojo vardas"
+        />
+        <Input
+          disabled
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          label="El. paštas"
+        />
+        <Input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          type="text"
+          label="Telefono numeris"
+        />
+        <AddressAutocomplete
+          value={address}
+          onChange={(value) => {
+            setAddress(value);
+            setAddressError("");
+          }}
+          onPlaceSelected={(isValid, details) => {
+            setIsAddressValid(isValid);
+            if (!isValid) {
+              setAddressError(
+                "Adresas turi turėti gatvės pavadinimą ir pašto kodą."
+              );
+            } else {
               setAddressError("");
-            }}
-            onPlaceSelected={(isValid) => {
-              setIsAddressValid(isValid);
-              if (!isValid)
-                setAddressError(
-                  "Adresas turi turėti gatvės pavadinimą ir pašto kodą."
-                );
-              else setAddressError("");
-            }}
-            error={addressError}
-          />
-          <Button type="submit" variant="primary">
-            Išsaugoti
-          </Button>
-        </UserInfoWrapper>
-      </Container>
-    </GoogleMapsProvider>
+              if (details?.lat && details?.lng) {
+                setLat(details.lat);
+                setLng(details.lng);
+              }
+            }
+          }}
+          error={addressError}
+        />
+        <Button type="submit" variant="primary">
+          Išsaugoti
+        </Button>
+      </UserInfoWrapper>
+    </Container>
   );
 };
 

@@ -8,8 +8,6 @@ export interface ProductData {
   category: string;
   condition: string;
   isForSale: boolean;
-  location?: string;
-  contactInfo: string;
   images?: File[];
 }
 

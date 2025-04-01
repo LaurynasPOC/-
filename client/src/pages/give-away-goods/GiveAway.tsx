@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Input from "../../components/Input";
 import { Container } from "../../components/wrappers";
 import Select from "../../components/Select";
+import Button from "../../components/Buttons";
 import ImageUpload from "../../components/ImageUpload";
 import { addProduct, ProductData } from "../../services/products";
 
@@ -15,8 +16,6 @@ const GoodsForm: React.FC = () => {
   const [isForSale, setIsForSale] = useState<string>("");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [location, setLocation] = useState("");
-  const [contactInfo, setContactInfo] = useState("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -53,8 +52,6 @@ const GoodsForm: React.FC = () => {
       category,
       condition,
       isForSale: isForSale === "sale",
-      location,
-      contactInfo,
       images,
     };
 
@@ -135,31 +132,15 @@ const GoodsForm: React.FC = () => {
           removeImage={removeImage}
         />
 
-        <InputWrapper>
-          <label>Location (Optional)</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </InputWrapper>
-
-        <InputWrapper>
-          <label>Contact Info (Email/Phone)</label>
-          <input
-            type="text"
-            value={contactInfo}
-            onChange={(e) => setContactInfo(e.target.value)}
-            required
-          />
-        </InputWrapper>
-
-        <Button type="submit">Submit</Button>
+        <Button type="submit" margin="0 auto">
+          Submit
+        </Button>
       </FormWrapper>
     </Container>
   );
 };
 
+export default GoodsForm;
 // Styled components
 const FormWrapper = styled.form`
   max-width: 600px;
@@ -167,38 +148,5 @@ const FormWrapper = styled.form`
   padding: 20px;
   background: #f9f9f9;
   border-radius: 8px;
+  text-align: center;
 `;
-
-const InputWrapper = styled.div`
-  margin-bottom: 16px;
-  label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-`;
-
-const Button = styled.button`
-  background: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  font-size: 16px;
-  &:hover {
-    background-color: #45a049;
-  }
-`;
-
-export default GoodsForm;
